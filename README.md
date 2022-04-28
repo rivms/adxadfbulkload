@@ -20,33 +20,41 @@ The ```PartitionsToLoad``` parameter value is structured as follows. The ```part
 ]
 ```
 
-
 <img width="596" alt="image" src="https://user-images.githubusercontent.com/50959956/165667772-401b8bac-b127-47a3-9190-da27aaeddc6d.png">
 
 The ```ForEach``` activity loops over each json object in the ```PartitionsToLoad``` parameter value. 
+
 <img width="599" alt="image" src="https://user-images.githubusercontent.com/50959956/165667885-9cf96f95-5d84-4eaf-b131-afab9306f6be.png">
 
 A Copy activity is run for each JSON object in the array. Each entry in the array is actually a string and needs to parsed as a JSON object to retrieve the individual field values. The ```json``` function is used to conver the string to an object to access the individual fields, in the diagram below the ```sourceFolder``` field is being used.
+
 <img width="598" alt="image" src="https://user-images.githubusercontent.com/50959956/165668026-d3fd0d14-3ff7-4ba8-9416-af114c261062.png">
 
 The sink or destination is an Azure Data Explorer table. The ingestion property is specified as an additional property.
+
 <img width="599" alt="image" src="https://user-images.githubusercontent.com/50959956/165668075-c306a7f6-1ca9-4205-9480-d7d2d9703b34.png">
 
  Note that dynamic content is used to construct the json object whose fields represent the individual ingestion properties. In this case only the ```creationTime``` property is set and it's value is derived from the ```partitionTImestamp``` field of the input parameter.
+
 <img width="598" alt="image" src="https://user-images.githubusercontent.com/50959956/165668150-fe2ea8f9-8a97-45c6-8a14-7b41f32ff586.png">
 
 For simplicity the field mapping from csv file to Azure Data Explorer table columns is managed by Azure Data Factory. This is done by importing the schemas and using the default mapping of columns. 
+
 <img width="501" alt="image" src="https://user-images.githubusercontent.com/50959956/165668194-be5241bf-7f28-48e0-8675-acf3c8724336.png">
 
 Two linked services are used, one for the Azure Storage Account and Azure Data Explorer.
+
 <img width="590" alt="image" src="https://user-images.githubusercontent.com/50959956/165669284-6573fe2e-34b7-4810-b8c7-d88cabe47859.png">
 
 A dataset is created for the target Azure Data Explorer table. 
+
 <img width="584" alt="image" src="https://user-images.githubusercontent.com/50959956/165669446-15a6287d-62c8-48a3-9f0f-8a368bbdfe85.png">
 
 For flexibility the table name is parameterised.
+
 <img width="524" alt="image" src="https://user-images.githubusercontent.com/50959956/165669478-efd1eae8-7d56-458c-b5ab-5676cb03f8be.png">
 
 The input data set is of type CSV.
+
 <img width="628" alt="image" src="https://user-images.githubusercontent.com/50959956/165669530-d8cbf3ea-9e13-4145-940a-17a7ae740f15.png">
 
