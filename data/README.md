@@ -1,0 +1,1 @@
+This folder is intentionally empty. Sample data is downloaded to this folder using the Powershell script in the root of the repository. 
