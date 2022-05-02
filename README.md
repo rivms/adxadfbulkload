@@ -87,7 +87,7 @@ The input data set is of type CSV.
 ## Verifying the pipeline output
 After triggering the pipeline the ADF monitoring output should like the diagram below showing successful completion of all the copy activities, one for each year (or source folder).
 
-<TBD: Data factory monitoring output>
+<img width="433" alt="image" src="https://user-images.githubusercontent.com/50959956/166181441-25862326-8ec5-4ce4-b6c4-8522c97ac0ec.png">
 
 The number of ingested rows can be confirmed by running the KQL query below:
 
@@ -102,7 +102,12 @@ To confirm that the ```creationTime``` ingestion property has been used run the 
 
 The ```MaxCreatedOn``` column will reflect the time specificed by the additional parameters used by the ADF Copy Activity. 
 
+<img width="391" alt="image" src="https://user-images.githubusercontent.com/50959956/166181542-9fe760e0-8e07-4462-98f6-1ab764331d5e.png">
+
 We can also verify that the 2022 taxi data resides in the hot cache by running the following query. The extents created for the 2022 data set should appear in the list.
 ```
 .show table NYCTaxi extents hot
 ```
+
+<img width="389" alt="image" src="https://user-images.githubusercontent.com/50959956/166181613-d82b54a8-c9f2-4aae-96c4-30d2f4316b8c.png">
+
