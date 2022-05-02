@@ -8,7 +8,33 @@ In the context of bulk loading data into Data Explorer a key ingestion property 
 
 The data factory pipeline shown in the screenshots below shows how csv files from blob storage can be bulk loaded into Azure Data Explorer with the ```creationTime``` ingestion property being set for each COPY activity.
 
-## Historical Load Pipeline
+# Historical Load Pipeline
+
+## Azure Data Explorer Setup
+This sample will ingest NYC Taxi Trip records. The following table will be used as the destination. 
+```
+.create table NYCTaxi(VendorID:int32, tpep_pickup_datetime:datetime, tpep_dropoff_datetime:datetime, passenger_count:real, trip_distance:real, RatecodeID:real, store_and_fwd_flag:string, PULocationID:int, DOLocationID:int, payment_type:int, fare_amount:real, extra:real, mta_tax:real, tip_amount:real, tolls_amount:real, improvement_surcharge:real, total_amount:real, congestion_surcharge:real)
+```
+
+Create this table in a database that will written to by the Data Factory Pipeline. Ensure the Azure Data Factory managed identity has the ingestor role, if not it can be assigned as follows:
+```
+.add table NYCTaxi ingestors ('aadapp=<ADF managed identity client id GUID>;<Subscription Id GUID>') '<App Name shown in ADX>'
+```
+
+## Azure Storage Account Setup
+The ADF pipeline relines on a specific folder structure to ingest the NYC Taxi Trip records. The PowerShell script included in this repository downloads as subset of this dataset for use by the pipeline. The downloaded files need to be added to the storage account using the following structure. NOTE: The script will download almost 1GB of data. The csv files can easily be substituted, just ensure the destination table structure is updated as well.
+
+Here's a view of the required container named ```nyctaxi```
+<TBD: container diagram>
+
+And here is a view of the folder structure within the container:
+- ```dt=2019``` stores csv files for the year 2019
+- ```dt=2022``` stores csv files for the year 2022. We'd like to have these in the hot cache after loading
+
+<TBD: folder diagram>
+
+## Azure Data Factory Pipeline
+
 The pipeline is metadata driven with a copy activity being run for each folder containing csv files to be loaded. Each copy activity also specifies the ```creationTime``` as in ingestion property. The list of folders to ingest and the associated creation time is specified using a pipeline parameter ```PartitionsToLoad``` with an array of JSON objects as the value. This allows the pipeline to be reusable across multiple input folders.
 
 
@@ -58,3 +84,25 @@ The input data set is of type CSV.
 
 <img width="628" alt="image" src="https://user-images.githubusercontent.com/50959956/165669530-d8cbf3ea-9e13-4145-940a-17a7ae740f15.png">
 
+## Verifying the pipeline output
+After triggering the pipeline the ADF monitoring output should like the diagram below showing successful completion of all the copy activities, one for each year (or source folder).
+
+<TBD: Data factory monitoring output>
+
+The number of ingested rows can be confirmed by running the KQL query below:
+
+```
+NYCTaxi
+| count
+```
+To confirm that the ```creationTime``` ingestion property has been used run the following query:
+```
+.show table NYCTaxi extents 
+```
+
+The ```MaxCreatedOn``` column will reflect the time specificed by the additional parameters used by the ADF Copy Activity. 
+
+We can also verify that the 2022 taxi data resides in the hot cache by running the following query. The extents created for the 2022 data set should appear in the list.
+```
+.show table NYCTaxi extents hot
+```
