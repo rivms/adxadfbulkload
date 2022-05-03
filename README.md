@@ -31,7 +31,13 @@ And here is a view of the folder structure within the container:
 - ```dt=2019``` stores csv files for the year 2019
 - ```dt=2022``` stores csv files for the year 2022. We'd like to have these in the hot cache after loading
 
-<TBD: folder diagram>
+![image](https://user-images.githubusercontent.com/50959956/166411422-e7ed6dcf-2f81-465a-ade6-589399b919d7.png)
+
+![image](https://user-images.githubusercontent.com/50959956/166411478-e86e1642-44fe-4e83-8713-148171fd78bf.png)
+
+![image](https://user-images.githubusercontent.com/50959956/166411565-ce2cd5cc-6cd3-46f9-b9bd-62262aec28e0.png)
+
+
 
 ## Azure Data Factory Pipeline
 
