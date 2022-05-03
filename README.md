@@ -31,11 +31,15 @@ And here is a view of the folder structure within the container:
 - ```dt=2019``` stores csv files for the year 2019
 - ```dt=2022``` stores csv files for the year 2022. We'd like to have these in the hot cache after loading
 
+**Blob Container**
+
 ![image](https://user-images.githubusercontent.com/50959956/166411422-e7ed6dcf-2f81-465a-ade6-589399b919d7.png)
 
-![image](https://user-images.githubusercontent.com/50959956/166411478-e86e1642-44fe-4e83-8713-148171fd78bf.png)
+**Folders for each year, using Hive naming convention** 
+![image](https://user-images.githubusercontent.com/50959956/166411947-f3405471-8255-4f39-a1dc-cc95b49109ce.png)
 
-![image](https://user-images.githubusercontent.com/50959956/166411565-ce2cd5cc-6cd3-46f9-b9bd-62262aec28e0.png)
+**Taxi data for a single month of the year, all files for a year will be processed by a single copy activity**
+![image](https://user-images.githubusercontent.com/50959956/166411908-4022691c-80a2-4cc6-b41f-02ed3ada0f57.png)
 
 
 
@@ -44,18 +48,19 @@ And here is a view of the folder structure within the container:
 The pipeline is metadata driven with a copy activity being run for each folder containing csv files to be loaded. Each copy activity also specifies the ```creationTime``` as in ingestion property. The list of folders to ingest and the associated creation time is specified using a pipeline parameter ```PartitionsToLoad``` with an array of JSON objects as the value. This allows the pipeline to be reusable across multiple input folders.
 
 
-The ```PartitionsToLoad``` parameter value is structured as follows. The ```partitionTimestamp``` field is used as the creation time for all files within the source folder.
+The ```PartitionsToLoad``` parameter value is structured as follows. The ```partitionTimestamp``` field is used as the creation time for all files within the source folder. Each array entry is of a string data type.
 ```json
 [
 "{'sourceFolder': 'dt=2022', 'partitionTimestamp': '2022-04-26'}", 
 "{'sourceFolder': 'dt=2019', 'partitionTimestamp': '2019-01-01'}"
 ]
 ```
-
+**Reuse pipeline across input folders by modifying the json parameter value**
 <img width="596" alt="image" src="https://user-images.githubusercontent.com/50959956/165667772-401b8bac-b127-47a3-9190-da27aaeddc6d.png">
 
 The ```ForEach``` activity loops over each json object in the ```PartitionsToLoad``` parameter value. 
 
+**A parameter is the source of the items array, could also use Lookup activity**
 <img width="599" alt="image" src="https://user-images.githubusercontent.com/50959956/165667885-9cf96f95-5d84-4eaf-b131-afab9306f6be.png">
 
 A Copy activity is run for each JSON object in the array. Each entry in the array is actually a string and needs to parsed as a JSON object to retrieve the individual field values. The ```json``` function is used to conver the string to an object to access the individual fields, in the diagram below the ```sourceFolder``` field is being used.
